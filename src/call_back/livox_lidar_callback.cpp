@@ -30,6 +30,35 @@
 
 namespace livox_ros {
 
+
+void LivoxLidarCallback::LidarRestoreCallback(const uint32_t handle,
+                                           const LivoxLidarInfo* info,
+                                           void* client_data) {
+
+  if (client_data == nullptr) {
+    std::cout << "lidar info change callback failed, client data is nullptr" << std::endl;
+    return;
+  }
+  LdsLidar* lds_lidar = static_cast<LdsLidar*>(client_data);
+
+}
+
+void LivoxLidarCallback::LidarShutdownCallback(const uint32_t handle,
+                                           const LivoxLidarInfo* info,
+                                           void* client_data) {
+
+  if (client_data == nullptr) {
+    std::cout << "lidar info change callback failed, client data is nullptr" << std::endl;
+    return;
+  }
+  LdsLidar* lds_lidar = static_cast<LdsLidar*>(client_data);
+
+  std::cout << "SLEEPING BEAUTY MODE ACTIVATED 'Normal', handle: " << handle << std::endl;
+  SetLivoxLidarWorkMode(handle, kLivoxLidarWakeUp, WorkModeChangedCallback, nullptr);
+  DisableLivoxLidarImuData(handle, LivoxLidarCallback::DisableLivoxLidarImuDataCallback, lds_lidar);
+
+}
+
 void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,
                                            const LivoxLidarInfo* info,
                                            void* client_data) {
@@ -116,6 +145,12 @@ void LivoxLidarCallback::WorkModeChangedCallback(livox_status status,
     std::cout << "failed to change work mode, handle: " << handle << ", try again..."<< std::endl;
     std::this_thread::sleep_for(std::chrono::seconds(1));
     SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
+    if (status == kLivoxLidarStatusTimeout)
+    {
+      std::cout << "status: " << "TIMEDOUT" << std::endl;
+    }
+     std::cout << "status: " << status << std::endl;
+    
     return;
   }
   std::cout << "successfully change work mode, handle: " << handle << std::endl;
@@ -313,6 +348,31 @@ void LivoxLidarCallback::EnableLivoxLidarImuDataCallback(livox_status status, ui
     std::cout << "failed to enable Livox Lidar imu, ip: " << IpNumToString(handle) << std::endl;
   }
 }
+
+void LivoxLidarCallback::DisableLivoxLidarImuDataCallback(livox_status status, uint32_t handle,
+                                                         LivoxLidarAsyncControlResponse *response,
+                                                         void *client_data) {
+  LidarDevice* lidar_device =  GetLidarDevice(handle, client_data);
+  if (lidar_device == nullptr) {
+    std::cout << "failed to set pattern mode since no lidar device found, handle: "
+              << handle << std::endl;
+    return;
+  }
+  LdsLidar* lds_lidar = static_cast<LdsLidar*>(client_data);
+
+  if (response == nullptr) {
+    std::cout << "failed to get response since no lidar IMU sensor found, handle: "
+              << handle << std::endl;
+    return;
+  }
+
+  if (status == kLivoxLidarStatusSuccess) {
+    std::cout << "successfully enable Livox Lidar imu, ip: " << IpNumToString(handle) << std::endl;
+  }else {
+    std::cout << "failed to enable Livox Lidar imu, ip: " << IpNumToString(handle) << std::endl;
+  }
+}
+
 
 LidarDevice* LivoxLidarCallback::GetLidarDevice(const uint32_t handle, void* client_data) {
   if (client_data == nullptr) {

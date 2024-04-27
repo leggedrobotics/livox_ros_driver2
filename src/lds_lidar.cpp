@@ -127,9 +127,6 @@ bool LdsLidar::ParseSummaryConfig() {
 }
 
 bool LdsLidar::InitLivoxLidar() {
-#ifdef BUILDING_ROS2
-  DisableLivoxSdkConsoleLogger();
-#endif
 
   // parse user config
   LivoxLidarConfigParser parser(path_);
@@ -180,6 +177,12 @@ bool LdsLidar::InitLivoxLidar() {
   }
 
   SetLivoxLidarInfoChangeCallback(LivoxLidarCallback::LidarInfoChangeCallback, g_lds_ldiar);
+  return true;
+}
+
+bool LdsLidar::SleepLiDAR() {
+
+  SetLivoxLidarInfoChangeCallback(LivoxLidarCallback::LidarShutdownCallback, g_lds_ldiar);
   return true;
 }
 

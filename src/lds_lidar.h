@@ -64,6 +64,8 @@ class LdsLidar final : public Lds {
   bool InitLidars();
   bool InitLivoxLidar();    // for new SDK
 
+  bool SleepLiDAR(); 
+
   bool LivoxLidarStart();
 
   void ResetLdsLidar(void);

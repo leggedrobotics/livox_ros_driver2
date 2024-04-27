@@ -39,6 +39,12 @@ class LivoxLidarCallback {
   static void LidarInfoChangeCallback(const uint32_t handle,
                                       const LivoxLidarInfo* info,
                                       void* client_data);
+  static void LidarShutdownCallback(const uint32_t handle,
+                                      const LivoxLidarInfo* info,
+                                      void* client_data);
+  static void LidarRestoreCallback(const uint32_t handle,
+                                      const LivoxLidarInfo* info,
+                                      void* client_data);                               
   static void WorkModeChangedCallback(livox_status status,
                                       uint32_t handle,
                                       LivoxLidarAsyncControlResponse *response,
@@ -61,6 +67,9 @@ class LivoxLidarCallback {
   static void EnableLivoxLidarImuDataCallback(livox_status status, uint32_t handle,
                                   LivoxLidarAsyncControlResponse *response,
                                   void *client_data);
+  static void DisableLivoxLidarImuDataCallback(livox_status status, uint32_t handle,
+                                  LivoxLidarAsyncControlResponse *response,
+                                  void *client_data);                      
 
  private:
   static LidarDevice* GetLidarDevice(const uint32_t handle, void* client_data);

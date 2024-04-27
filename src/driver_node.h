@@ -43,10 +43,17 @@ class DriverNode final : public ros::NodeHandle {
 
   void PointCloudDataPollThread();
   void ImuDataPollThread();
+  void rosNodeThread(ros::NodeHandle& livox_node);
+  
+  bool shutdownServiceCallback(std_srvs::Empty::Request& /*req*/, std_srvs::Empty::Response& /*res*/);
+  bool bookkeeper_ = false;
 
+  
+  ros::ServiceServer sleepServiceServer_;
   std::unique_ptr<Lddc> lddc_ptr_;
   std::shared_ptr<std::thread> pointclouddata_poll_thread_;
   std::shared_ptr<std::thread> imudata_poll_thread_;
+  std::shared_ptr<std::thread> serrviceListenThread;
   std::shared_future<void> future_;
   std::promise<void> exit_signal_;
 };
