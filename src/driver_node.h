@@ -43,7 +43,6 @@ class DriverNode final : public ros::NodeHandle {
 
   void PointCloudDataPollThread();
   void ImuDataPollThread();
-  void rosNodeThread(ros::NodeHandle& livox_node);
   
   bool shutdownServiceCallback(std_srvs::Empty::Request& /*req*/, std_srvs::Empty::Response& /*res*/);
   bool bookkeeper_ = false;

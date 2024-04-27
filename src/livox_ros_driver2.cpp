@@ -126,8 +126,6 @@ int main(int argc, char **argv) {
   livox_node.pointclouddata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::PointCloudDataPollThread, &livox_node);
   livox_node.imudata_poll_thread_ = std::make_shared<std::thread>(&DriverNode::ImuDataPollThread, &livox_node);
 
-  std::thread ros_thread(rosNodeThread(std::ref(livox_node.GetNode())));
-
   while (ros::ok()) { usleep(10000); }
 
   return 0;
@@ -222,35 +220,6 @@ void DriverNode::PointCloudDataPollThread()
     lddc_ptr_->DistributePointCloudData();
     status = future_.wait_for(std::chrono::microseconds(0));
   } while (status == std::future_status::timeout);
-}
-
-void DriverNode::listenServiceThread(livox_ros::DriverNode& livox_node)
-{
-  //std::future_status status;
-  ///std::this_thread::sleep_for(std::chrono::seconds(3));
-  //do {
-
-  //  status = future_.wait_for(std::chrono::microseconds(0));
-  //} while (status == std::future_status::timeout);
-}
-
-void DriverNode::rosNodeThread(ros::NodeHandle& livox_node) {
-    
-  ros::CallbackQueue custom_queue1;
-  livox_node.GetNode().setCallbackQueue(&custom_queue1);
-
-  livox_node.sleepServiceServer_ = livox_node.GetNode().advertiseService<std_srvs::Empty::Request, std_srvs::Empty::Response>("call_me",
-                                                    [&] (auto &req, auto &res) {
-                                                      //DRIVER_INFO("called!");
-                                                      //livox_node.bookkeeper_ = true;
-                                                      //std::this_thread::sleep_for(std::chrono::seconds(1));
-                                                      
-                                                      std::cout << "Livox sleeping" << std::endl;
-                                                      return true; });
-
-
-  ros::AsyncSpinner spinner1(1, &custom_queue1);
-  spinner1.start();
 }
 
 void DriverNode::ImuDataPollThread()
