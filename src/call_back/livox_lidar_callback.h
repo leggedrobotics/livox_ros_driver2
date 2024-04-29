@@ -49,6 +49,10 @@ class LivoxLidarCallback {
                                       uint32_t handle,
                                       LivoxLidarAsyncControlResponse *response,
                                       void *client_data);
+  static void ScanSensitivityCallback(livox_status status,
+                                      uint32_t handle,
+                                      LivoxLidarAsyncControlResponse *response,
+                                      void *client_data);
   static void SetDataTypeCallback(livox_status status, uint32_t handle,
                                   LivoxLidarAsyncControlResponse *response,
                                   void *client_data);

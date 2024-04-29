@@ -53,8 +53,6 @@ void LivoxLidarCallback::LidarShutdownCallback(const uint32_t handle,
   }
   LdsLidar* lds_lidar = static_cast<LdsLidar*>(client_data);
 
-  std::cout << "SLEEPING BEAUTY MODE ACTIVATED 'Normal', handle: " << handle << std::endl;
-  SetLivoxLidarWorkMode(handle, kLivoxLidarWakeUp, WorkModeChangedCallback, nullptr);
   DisableLivoxLidarImuData(handle, LivoxLidarCallback::DisableLivoxLidarImuDataCallback, lds_lidar);
 
 }
@@ -134,7 +132,36 @@ void LivoxLidarCallback::LidarInfoChangeCallback(const uint32_t handle,
   std::cout << "begin to change work mode to 'Normal', handle: " << handle << std::endl;
   SetLivoxLidarWorkMode(handle, kLivoxLidarNormal, WorkModeChangedCallback, nullptr);
   EnableLivoxLidarImuData(handle, LivoxLidarCallback::EnableLivoxLidarImuDataCallback, lds_lidar);
+  SetLivoxLidarDetectMode(handle, kLivoxLidarDetectSensitive, ScanSensitivityCallback, nullptr);
   return;
+}
+
+void LivoxLidarCallback::ScanSensitivityCallback(livox_status status, uint32_t handle,LivoxLidarAsyncControlResponse *response, void *client_data) {
+  if (response == nullptr) {
+    return;
+  }
+
+  if (status != kLivoxLidarStatusSuccess) {
+    std::cout << "failed to scan sensitivity mode, handle: " << handle << ", try again..."<< std::endl;
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    SetLivoxLidarDetectMode(handle, kLivoxLidarDetectNormal, ScanSensitivityCallback, nullptr);
+    if (status == kLivoxLidarStatusTimeout)
+    {
+      std::cout << "Status: " << "TIMEDOUT" << std::endl;
+    }
+     std::cout << "Status: " << status << std::endl;
+    
+    return;
+  }
+
+  printf("--------------------------------------------------------------------------------\n");
+  printf("ScanSensitivityCallback, status:%u, handle:%u, ret_code:%u, error_key:%u",
+      status, handle, response->ret_code, response->error_key);
+      printf("--------------------------------------------------------------------------------\n");
+
+  std::cout << "Successfully change scan sensitivity mode: " << handle << std::endl;
+  return;
+
 }
 
 void LivoxLidarCallback::WorkModeChangedCallback(livox_status status,
