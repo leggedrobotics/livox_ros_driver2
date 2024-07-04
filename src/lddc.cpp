@@ -172,6 +172,9 @@ void Lddc::PollingLidarPointCloudData(uint8_t index, LidarDevice *lidar) {
       PublishCustomPointcloud(p_queue, index);
     } else if (kPclPxyziMsg == transfer_format_) {
       PublishPclMsg(p_queue, index);
+    } else if (kCombinationMsg == transfer_format_) {
+      PublishPointcloud2(p_queue, index);
+      PublishCustomPointcloud(p_queue, index);
     }
   }
 }
@@ -334,10 +337,10 @@ void Lddc::InitPointcloud2Msg(const StoragePacket& pkg, PointCloud2& cloud, uint
 
 void Lddc::PublishPointcloud2Data(const uint8_t index, const uint64_t timestamp, const PointCloud2& cloud) {
 #ifdef BUILDING_ROS1
-  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index);
+  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index, kPointCloud2Msg);
 #elif defined BUILDING_ROS2
   Publisher<PointCloud2>::SharedPtr publisher_ptr =
-    std::dynamic_pointer_cast<Publisher<PointCloud2>>(GetCurrentPublisher(index));
+    std::dynamic_pointer_cast<Publisher<PointCloud2>>(GetCurrentPublisher(index, kPointCloud2Msg));
 #endif
 
   if (kOutputToRos == output_type_) {
@@ -400,9 +403,9 @@ void Lddc::FillPointsToCustomMsg(CustomMsg& livox_msg, const StoragePacket& pkg)
 
 void Lddc::PublishCustomPointData(const CustomMsg& livox_msg, const uint8_t index) {
 #ifdef BUILDING_ROS1
-  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index);
+  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index, kLivoxCustomMsg);
 #elif defined BUILDING_ROS2
-  Publisher<CustomMsg>::SharedPtr publisher_ptr = std::dynamic_pointer_cast<Publisher<CustomMsg>>(GetCurrentPublisher(index));
+  Publisher<CustomMsg>::SharedPtr publisher_ptr = std::dynamic_pointer_cast<Publisher<CustomMsg>>(GetCurrentPublisher(index , kLivoxCustomMsg));
 #endif
 
   if (kOutputToRos == output_type_) {
@@ -461,7 +464,7 @@ void Lddc::FillPointsToPclMsg(const StoragePacket& pkg, PointCloud& pcl_msg) {
 
 void Lddc::PublishPclData(const uint8_t index, const uint64_t timestamp, const PointCloud& cloud) {
 #ifdef BUILDING_ROS1
-  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index);
+  PublisherPtr publisher_ptr = Lddc::GetCurrentPublisher(index, kPclPxyziMsg);
   if (kOutputToRos == output_type_) {
     publisher_ptr->publish(cloud);
   } else {
@@ -555,7 +558,7 @@ std::shared_ptr<rclcpp::PublisherBase> Lddc::CreatePublisher(uint8_t msg_type,
 #endif
 
 #ifdef BUILDING_ROS1
-PublisherPtr Lddc::GetCurrentPublisher(uint8_t index) {
+PublisherPtr Lddc::GetCurrentPublisher(uint8_t index, const TransferType type) {
   ros::Publisher **pub = nullptr;
   uint32_t queue_size = kMinEthPacketQueueSize;
 
@@ -581,19 +584,19 @@ PublisherPtr Lddc::GetCurrentPublisher(uint8_t index) {
     }
 
     *pub = new ros::Publisher;
-    if (kPointCloud2Msg == transfer_format_) {
+    if (kPointCloud2Msg == type) {
       **pub =
           cur_node_->GetNode().advertise<sensor_msgs::PointCloud2>(name_str, queue_size);
       DRIVER_INFO(*cur_node_,
           "%s publish use PointCloud2 format, set ROS publisher queue size %d",
           name_str, queue_size);
-    } else if (kLivoxCustomMsg == transfer_format_) {
+    } else if (kLivoxCustomMsg == type) {
       **pub = cur_node_->GetNode().advertise<livox_ros_driver2::CustomMsg>(name_str,
                                                                 queue_size);
       DRIVER_INFO(*cur_node_,
           "%s publish use livox custom format, set ROS publisher queue size %d",
           name_str, queue_size);
-    } else if (kPclPxyziMsg == transfer_format_) {
+    } else if (kPclPxyziMsg == type) {
       **pub = cur_node_->GetNode().advertise<PointCloud>(name_str, queue_size);
       DRIVER_INFO(*cur_node_,
           "%s publish use pcl PointXYZI format, set ROS publisher queue "
@@ -639,7 +642,7 @@ PublisherPtr Lddc::GetCurrentImuPublisher(uint8_t handle) {
   return *pub;
 }
 #elif defined BUILDING_ROS2
-std::shared_ptr<rclcpp::PublisherBase> Lddc::GetCurrentPublisher(uint8_t handle) {
+std::shared_ptr<rclcpp::PublisherBase> Lddc::GetCurrentPublisher(uint8_t handle, const TransferType type) {
   uint32_t queue_size = kMinEthPacketQueueSize;
   if (use_multi_topic_) {
     if (!private_pub_[handle]) {

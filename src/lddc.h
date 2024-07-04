@@ -44,6 +44,7 @@ typedef enum {
   kLivoxCustomMsg = 1,
   kPclPxyziMsg = 2,
   kLivoxImuMsg = 3,
+  kCombinationMsg = 4,
 } TransferType;
 
 /** Type-Definitions based on ROS versions */
@@ -128,7 +129,7 @@ class Lddc final {
   PublisherPtr CreatePublisher(uint8_t msg_type, std::string &topic_name, uint32_t queue_size);
 #endif
 
-  PublisherPtr GetCurrentPublisher(uint8_t index);
+  PublisherPtr GetCurrentPublisher(uint8_t index, const TransferType type);
   PublisherPtr GetCurrentImuPublisher(uint8_t index);
 
  private:
