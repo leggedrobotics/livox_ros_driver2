@@ -579,6 +579,20 @@ namespace livox_ros
     imu_msg.linear_acceleration.z = imu_data.acc_z;
   }
 
+  void Lddc::InitImuMsgSI(const ImuData &imu_data, ImuMsg &imu_msg, uint64_t &timestamp)
+  {
+    imu_msg.header.frame_id = "livox_frame";
+
+    timestamp = imu_data.time_stamp;
+    imu_msg.header.stamp = ros::Time(timestamp / 1000000000.0); // to ros time stamp
+    imu_msg.angular_velocity.x = imu_data.gyro_x;
+    imu_msg.angular_velocity.y = imu_data.gyro_y;
+    imu_msg.angular_velocity.z = imu_data.gyro_z;
+    imu_msg.linear_acceleration.x = imu_data.acc_x * 9.80600;
+    imu_msg.linear_acceleration.y = imu_data.acc_y * 9.80600;
+    imu_msg.linear_acceleration.z = imu_data.acc_z * 9.80600;
+  }
+
   void Lddc::PublishImuData(LidarImuDataQueue &imu_data_queue, const uint8_t index)
   {
     ImuData imu_data;
@@ -589,11 +603,14 @@ namespace livox_ros
     }
 
     ImuMsg imu_msg;
+    ImuMsg imu_msgSI;
     uint64_t timestamp;
     InitImuMsg(imu_data, imu_msg, timestamp);
+    InitImuMsgSI(imu_data, imu_msgSI, timestamp);
 
 #ifdef BUILDING_ROS1
     PublisherPtr publisher_ptr = GetCurrentImuPublisher(index);
+    
 #elif defined BUILDING_ROS2
     Publisher<ImuMsg>::SharedPtr publisher_ptr = std::dynamic_pointer_cast<Publisher<ImuMsg>>(GetCurrentImuPublisher(index));
 #endif
@@ -601,6 +618,7 @@ namespace livox_ros
     if (kOutputToRos == output_type_)
     {
       publisher_ptr->publish(imu_msg);
+      newImuPub.publish(imu_msgSI);
     }
     else
     {
@@ -772,6 +790,7 @@ namespace livox_ros
 
       *pub = new ros::Publisher;
       **pub = cur_node_->GetNode().advertise<sensor_msgs::Imu>(name_str, queue_size);
+      newImuPub = cur_node_->GetNode().advertise<sensor_msgs::Imu>("livox/imu_SI", queue_size);
       DRIVER_INFO(*cur_node_, "%s publish imu data, set ROS publisher queue size %d", name_str,
                   queue_size);
     }
