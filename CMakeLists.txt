@@ -90,6 +90,9 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 include_directories("/usr/local/lib")
 
+# include_directories("/home/tutuna/.local")
+# find_library(LIVOX_LIDAR_SDK_LIBRARY  liblivox_lidar_sdk_static.a    /home/tutuna/.local)
+
 ## make sure the livox_lidar_sdk_static library is installed
 find_library(LIVOX_LIDAR_SDK_LIBRARY  liblivox_lidar_sdk_static.a    /usr/local/lib)
 

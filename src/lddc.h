@@ -95,6 +95,7 @@ class Lddc final {
 
  public:
   Lds *lds_;
+  Publisher newImuPub;
 
  private:
   void PollingLidarPointCloudData(uint8_t index, LidarDevice *lidar);
@@ -119,6 +120,7 @@ class Lddc final {
   void PublishPclData(const uint8_t index, const uint64_t timestamp, const PointCloud& cloud);
 
   void InitImuMsg(const ImuData& imu_data, ImuMsg& imu_msg, uint64_t& timestamp);
+  void InitImuMsgSI(const ImuData& imu_data, ImuMsg& imu_msg, uint64_t& timestamp);
 
   void FillPointsToPclMsg(PointCloud& pcl_msg, LivoxPointXyzrtlt* src_point, uint32_t num);
   void FillPointsToCustomMsg(CustomMsg& livox_msg, LivoxPointXyzrtlt* src_point, uint32_t num,
