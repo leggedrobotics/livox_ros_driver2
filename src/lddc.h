@@ -95,7 +95,7 @@ class Lddc final {
 
  public:
   Lds *lds_;
-  Publisher newImuPub;
+  Publisher siCompliantImuPub;
 
  private:
   void PollingLidarPointCloudData(uint8_t index, LidarDevice *lidar);

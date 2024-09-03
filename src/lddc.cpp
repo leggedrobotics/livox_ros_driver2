@@ -525,7 +525,7 @@ void Lddc::PublishImuData(LidarImuDataQueue& imu_data_queue, const uint8_t index
 
 #ifdef BUILDING_ROS1
   PublisherPtr publisher_ptr = GetCurrentImuPublisher(index);
-  newImuPub.publish(imu_msg_SI);
+  siCompliantImuPub.publish(imu_msg_SI);
 #elif defined BUILDING_ROS2
   Publisher<ImuMsg>::SharedPtr publisher_ptr = std::dynamic_pointer_cast<Publisher<ImuMsg>>(GetCurrentImuPublisher(index));
 #endif
@@ -650,7 +650,7 @@ PublisherPtr Lddc::GetCurrentImuPublisher(uint8_t handle) {
 
     *pub = new ros::Publisher;
     **pub = cur_node_->GetNode().advertise<sensor_msgs::Imu>(name_str, queue_size);
-    newImuPub = cur_node_->GetNode().advertise<sensor_msgs::Imu>("livox/imu_SI", queue_size);
+    siCompliantImuPub = cur_node_->GetNode().advertise<sensor_msgs::Imu>("livox/imu_si_compliant", queue_size);
     DRIVER_INFO(*cur_node_, "%s publish imu data, set ROS publisher queue size %d", name_str,
              queue_size);
   }
