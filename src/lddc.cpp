@@ -124,7 +124,7 @@ void Lddc::DistributePointCloudData(void) {
     std::cout << "DistributePointCloudData is RequestExit" << std::endl;
     return;
   }
-  
+
   lds_->pcd_semaphore_.Wait();
   for (uint32_t i = 0; i < lds_->lidar_count_; i++) {
     uint32_t lidar_id = i;
@@ -133,7 +133,7 @@ void Lddc::DistributePointCloudData(void) {
     if ((kConnectStateSampling != lidar->connect_state) || (p_queue == nullptr)) {
       continue;
     }
-    PollingLidarPointCloudData(lidar_id, lidar);    
+    PollingLidarPointCloudData(lidar_id, lidar);
   }
 }
 
@@ -146,7 +146,7 @@ void Lddc::DistributeImuData(void) {
     std::cout << "DistributeImuData is RequestExit" << std::endl;
     return;
   }
-  
+
   lds_->imu_semaphore_.Wait();
   for (uint32_t i = 0; i < lds_->lidar_count_; i++) {
     uint32_t lidar_id = i;
@@ -428,7 +428,7 @@ void Lddc::InitPclMsg(const StoragePacket& pkg, PointCloud& cloud, uint64_t& tim
   cloud.header.stamp = timestamp / 1000.0;  // to pcl ros time stamp
 #elif defined BUILDING_ROS2
   std::cout << "warning: pcl::PointCloud is not supported in ROS2, "
-            << "please check code logic" 
+            << "please check code logic"
             << std::endl;
 #endif
   return;
@@ -453,7 +453,7 @@ void Lddc::FillPointsToPclMsg(const StoragePacket& pkg, PointCloud& pcl_msg) {
   }
 #elif defined BUILDING_ROS2
   std::cout << "warning: pcl::PointCloud is not supported in ROS2, "
-            << "please check code logic" 
+            << "please check code logic"
             << std::endl;
 #endif
   return;
@@ -471,14 +471,14 @@ void Lddc::PublishPclData(const uint8_t index, const uint64_t timestamp, const P
   }
 #elif defined BUILDING_ROS2
   std::cout << "warning: pcl::PointCloud is not supported in ROS2, "
-            << "please check code logic" 
+            << "please check code logic"
             << std::endl;
 #endif
   return;
 }
 
 void Lddc::InitImuMsg(const ImuData& imu_data, ImuMsg& imu_msg, uint64_t& timestamp) {
-  imu_msg.header.frame_id = "livox_frame";
+  imu_msg.header.frame_id = "livox_imu";
 
   timestamp = imu_data.time_stamp;
 #ifdef BUILDING_ROS1
@@ -498,7 +498,7 @@ void Lddc::InitImuMsg(const ImuData& imu_data, ImuMsg& imu_msg, uint64_t& timest
 
 void Lddc::InitImuMsgSI(const ImuData &imu_data, ImuMsg &imu_msg, uint64_t &timestamp)
 {
-  imu_msg.header.frame_id = "livox_frame";
+  imu_msg.header.frame_id = "livox_imu";
 
   timestamp = imu_data.time_stamp;
   imu_msg.header.stamp = ros::Time(timestamp / 1000000000.0); // to ros time stamp
