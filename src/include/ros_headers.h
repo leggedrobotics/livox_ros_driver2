@@ -31,4 +31,4 @@
 #include "ros2_headers.h"
 #endif
 
-#endif // ROS_HEADERS_H_
+#endif  // ROS_HEADERS_H_

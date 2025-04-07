@@ -39,11 +39,13 @@
 
 #include "rapidjson/document.h"
 
-namespace livox_ros {
-
-class LdsLidar final : public Lds {
- public:
-  static LdsLidar *GetInstance(double publish_freq) {
+namespace livox_ros
+{
+class LdsLidar final : public Lds
+{
+public:
+  static LdsLidar* GetInstance(double publish_freq)
+  {
     printf("LdsLidar *GetInstance\n");
     static LdsLidar lds_lidar(publish_freq);
     return &lds_lidar;
@@ -53,18 +55,19 @@ class LdsLidar final : public Lds {
   bool Start();
 
   int DeInitLdsLidar(void);
- private:
+
+private:
   LdsLidar(double publish_freq);
-  LdsLidar(const LdsLidar &) = delete;
+  LdsLidar(const LdsLidar&) = delete;
   ~LdsLidar();
-  LdsLidar &operator=(const LdsLidar &) = delete;
+  LdsLidar& operator=(const LdsLidar&) = delete;
 
   bool ParseSummaryConfig();
 
   bool InitLidars();
-  bool InitLivoxLidar();    // for new SDK
+  bool InitLivoxLidar();  // for new SDK
 
-  bool SleepLiDAR(); 
+  bool SleepLiDAR();
 
   bool LivoxLidarStart();
 
@@ -72,17 +75,26 @@ class LdsLidar final : public Lds {
 
   void SetLidarPubHandle();
 
-	// auto connect mode
-	void EnableAutoConnectMode(void) { auto_connect_mode_ = true; }
-  void DisableAutoConnectMode(void) { auto_connect_mode_ = false; }
-  bool IsAutoConnectMode(void) { return auto_connect_mode_; }
+  // auto connect mode
+  void EnableAutoConnectMode(void)
+  {
+    auto_connect_mode_ = true;
+  }
+  void DisableAutoConnectMode(void)
+  {
+    auto_connect_mode_ = false;
+  }
+  bool IsAutoConnectMode(void)
+  {
+    return auto_connect_mode_;
+  }
 
   virtual void PrepareExit(void);
 
- public:
+public:
   std::mutex config_mutex_;
 
- private:
+private:
   std::string path_;
   LidarSummaryInfo lidar_summary_info_;
 
@@ -94,4 +106,4 @@ class LdsLidar final : public Lds {
 
 }  // namespace livox_ros
 
-#endif // LIVOX_ROS_DRIVER_LDS_LIDAR_H_
+#endif  // LIVOX_ROS_DRIVER_LDS_LIDAR_H_

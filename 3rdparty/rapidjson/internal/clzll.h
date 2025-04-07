@@ -31,14 +31,14 @@
 #endif
 
 RAPIDJSON_NAMESPACE_BEGIN
-namespace internal {
-
-#if (defined(__GNUC__) && __GNUC__ >= 4) || \
-    RAPIDJSON_HAS_BUILTIN(__builtin_clzll)
+namespace internal
+{
+#if (defined(__GNUC__) && __GNUC__ >= 4) || RAPIDJSON_HAS_BUILTIN(__builtin_clzll)
 #define RAPIDJSON_CLZLL __builtin_clzll
 #else
 
-inline uint32_t clzll(uint64_t x) {
+inline uint32_t clzll(uint64_t x)
+{
   // Passing 0 to __builtin_clzll is UB in GCC and results in an
   // infinite loop in the software implementation.
   RAPIDJSON_ASSERT(x != 0);
@@ -49,7 +49,8 @@ inline uint32_t clzll(uint64_t x) {
   _BitScanReverse64(&r, x);
 #else
   // Scan the high 32 bits.
-  if (_BitScanReverse(&r, static_cast<uint32_t>(x >> 32))) return 63 - (r + 32);
+  if (_BitScanReverse(&r, static_cast<uint32_t>(x >> 32)))
+    return 63 - (r + 32);
 
   // Scan the low 32 bits.
   _BitScanReverse(&r, static_cast<uint32_t>(x & 0xFFFFFFFF));
@@ -58,7 +59,8 @@ inline uint32_t clzll(uint64_t x) {
   return 63 - r;
 #else
   uint32_t r;
-  while (!(x & (static_cast<uint64_t>(1) << 63))) {
+  while (!(x & (static_cast<uint64_t>(1) << 63)))
+  {
     x <<= 1;
     ++r;
   }

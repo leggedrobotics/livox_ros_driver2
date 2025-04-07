@@ -25,22 +25,26 @@
 #include "cache_index.h"
 #include "livox_lidar_def.h"
 
-namespace livox_ros {
-
-CacheIndex::CacheIndex() {
-  std::array<bool, kMaxLidarCount> index_cache = {0};
+namespace livox_ros
+{
+CacheIndex::CacheIndex()
+{
+  std::array<bool, kMaxLidarCount> index_cache = { 0 };
   index_cache_.swap(index_cache);
 }
 
-int8_t CacheIndex::GetFreeIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index) {
+int8_t CacheIndex::GetFreeIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index)
+{
   std::string key;
   int8_t ret = GenerateIndexKey(livox_lidar_type, handle, key);
-  if (ret != 0) {
+  if (ret != 0)
+  {
     return -1;
   }
   {
     std::lock_guard<std::mutex> lock(index_mutex_);
-    if (map_index_.find(key) != map_index_.end()) {
+    if (map_index_.find(key) != map_index_.end())
+    {
       index = map_index_[key];
       return 0;
     }
@@ -49,8 +53,10 @@ int8_t CacheIndex::GetFreeIndex(const uint8_t livox_lidar_type, const uint32_t h
   {
     printf("GetFreeIndex key:%s.\n", key.c_str());
     std::lock_guard<std::mutex> lock(index_mutex_);
-    for (size_t i = 0; i < kMaxSourceLidar; ++i) {
-      if (!index_cache_[i]) {
+    for (size_t i = 0; i < kMaxSourceLidar; ++i)
+    {
+      if (!index_cache_[i])
+      {
         index_cache_[i] = 1;
         map_index_[key] = static_cast<uint8_t>(i);
         index = static_cast<uint8_t>(i);
@@ -61,24 +67,31 @@ int8_t CacheIndex::GetFreeIndex(const uint8_t livox_lidar_type, const uint32_t h
   return -1;
 }
 
-int8_t CacheIndex::GenerateIndexKey(const uint8_t livox_lidar_type, const uint32_t handle, std::string& key) {
-  if (livox_lidar_type == kLivoxLidarType) {
+int8_t CacheIndex::GenerateIndexKey(const uint8_t livox_lidar_type, const uint32_t handle, std::string& key)
+{
+  if (livox_lidar_type == kLivoxLidarType)
+  {
     key = "livox_lidar_" + std::to_string(handle);
-  } else {
+  }
+  else
+  {
     printf("Can not generate index, the livox lidar type is unknown, the livox lidar type:%u\n", livox_lidar_type);
     return -1;
   }
   return 0;
 }
 
-int8_t CacheIndex::GetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index) {
+int8_t CacheIndex::GetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index)
+{
   std::string key;
   int8_t ret = GenerateIndexKey(livox_lidar_type, handle, key);
-  if (ret != 0) {
+  if (ret != 0)
+  {
     return -1;
   }
 
-  if (map_index_.find(key) != map_index_.end()) {
+  if (map_index_.find(key) != map_index_.end())
+  {
     std::lock_guard<std::mutex> lock(index_mutex_);
     index = map_index_[key];
     return 0;
@@ -87,14 +100,17 @@ int8_t CacheIndex::GetIndex(const uint8_t livox_lidar_type, const uint32_t handl
   return -1;
 }
 
-int8_t CacheIndex::LvxGetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index) {
+int8_t CacheIndex::LvxGetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index)
+{
   std::string key;
   int8_t ret = GenerateIndexKey(livox_lidar_type, handle, key);
-  if (ret != 0) {
+  if (ret != 0)
+  {
     return -1;
   }
 
-  if (map_index_.find(key) != map_index_.end()) {
+  if (map_index_.find(key) != map_index_.end())
+  {
     index = map_index_[key];
     return 0;
   }
@@ -102,15 +118,19 @@ int8_t CacheIndex::LvxGetIndex(const uint8_t livox_lidar_type, const uint32_t ha
   return GetFreeIndex(livox_lidar_type, handle, index);
 }
 
-void CacheIndex::ResetIndex(LidarDevice *lidar) {
+void CacheIndex::ResetIndex(LidarDevice* lidar)
+{
   std::string key;
   int8_t ret = GenerateIndexKey(lidar->lidar_type, lidar->handle, key);
-  if (ret != 0) {
-    printf("Reset index failed, can not generate index key, lidar type:%u, handle:%u.\n", lidar->lidar_type, lidar->handle);
+  if (ret != 0)
+  {
+    printf("Reset index failed, can not generate index key, lidar type:%u, handle:%u.\n", lidar->lidar_type,
+           lidar->handle);
     return;
   }
 
-  if (map_index_.find(key) != map_index_.end()) {
+  if (map_index_.find(key) != map_index_.end())
+  {
     uint8_t index = map_index_[key];
     std::lock_guard<std::mutex> lock(index_mutex_);
     map_index_.erase(key);
@@ -118,4 +138,4 @@ void CacheIndex::ResetIndex(LidarDevice *lidar) {
   }
 }
 
-} // namespace
+}  // namespace livox_ros

@@ -49,4 +49,4 @@
 #define DRIVER_ERROR_EXTRA(node, EXTRA, ...) RCLCPP_ERROR_##EXTRA((node).get_logger(), __VA_ARGS__)
 #define DRIVER_FATAL_EXTRA(node, EXTRA, ...) RCLCPP_FATAL_##EXTRA((node).get_logger(), __VA_ARGS__)
 
-#endif // ROS2_HEADERS_H_
+#endif  // ROS2_HEADERS_H_

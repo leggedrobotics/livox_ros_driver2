@@ -27,27 +27,32 @@
 
 #include "ldq.h"
 
-namespace livox_ros {
-
+namespace livox_ros
+{
 /* for pointcloud queue process */
-bool InitQueue(LidarDataQueue *queue, uint32_t queue_size) {
-  if (queue == nullptr) {
+bool InitQueue(LidarDataQueue* queue, uint32_t queue_size)
+{
+  if (queue == nullptr)
+  {
     // ROS_WARN("RosDriver Queue: Initialization failed - invalid queue.");
     return false;
   }
 
-  if (!IsPowerOf2(queue_size)) {
+  if (!IsPowerOf2(queue_size))
+  {
     queue_size = RoundupPowerOf2(queue_size);
     printf("Init queue, real query size:%u.\n", queue_size);
   }
 
-  if (queue->storage_packet) {
+  if (queue->storage_packet)
+  {
     delete[] queue->storage_packet;
     queue->storage_packet = nullptr;
   }
 
   queue->storage_packet = new StoragePacket[queue_size];
-  if (queue->storage_packet == nullptr) {
+  if (queue->storage_packet == nullptr)
+  {
     // ROS_WARN("RosDriver Queue: Initialization failed - failed to allocate memory.");
     return false;
   }
@@ -60,13 +65,16 @@ bool InitQueue(LidarDataQueue *queue, uint32_t queue_size) {
   return true;
 }
 
-bool DeInitQueue(LidarDataQueue *queue) {
-  if (queue == nullptr) {
+bool DeInitQueue(LidarDataQueue* queue)
+{
+  if (queue == nullptr)
+  {
     // ROS_WARN("RosDriver Queue: Deinitialization failed - invalid queue.");
     return false;
   }
 
-  if (queue->storage_packet) {
+  if (queue->storage_packet)
+  {
     delete[] queue->storage_packet;
   }
 
@@ -78,18 +86,22 @@ bool DeInitQueue(LidarDataQueue *queue) {
   return true;
 }
 
-void ResetQueue(LidarDataQueue *queue) {
+void ResetQueue(LidarDataQueue* queue)
+{
   queue->rd_idx = 0;
   queue->wr_idx = 0;
 }
 
-bool QueuePrePop(LidarDataQueue *queue, StoragePacket *storage_packet) {
-  if (queue == nullptr || storage_packet == nullptr) {
+bool QueuePrePop(LidarDataQueue* queue, StoragePacket* storage_packet)
+{
+  if (queue == nullptr || storage_packet == nullptr)
+  {
     // ROS_WARN("RosDriver Queue: Invalid pointer parameters.");
     return false;
   }
 
-  if (QueueIsEmpty(queue)) {
+  if (QueueIsEmpty(queue))
+  {
     // ROS_WARN("RosDriver Queue: Pop failed, since the queue is empty.");
     return false;
   }
@@ -100,16 +112,20 @@ bool QueuePrePop(LidarDataQueue *queue, StoragePacket *storage_packet) {
   storage_packet->points_num = queue->storage_packet[rd_idx].points_num;
   storage_packet->points.resize(queue->storage_packet[rd_idx].points_num);
 
-  memcpy(storage_packet->points.data(), queue->storage_packet[rd_idx].points.data(), (storage_packet->points_num) * sizeof(PointXyzlt));
+  memcpy(storage_packet->points.data(), queue->storage_packet[rd_idx].points.data(),
+         (storage_packet->points_num) * sizeof(PointXyzlt));
   return true;
 }
 
-void QueuePopUpdate(LidarDataQueue *queue) {
+void QueuePopUpdate(LidarDataQueue* queue)
+{
   queue->rd_idx++;
 }
 
-bool QueuePop(LidarDataQueue *queue, StoragePacket *storage_packet) {
-  if (!QueuePrePop(queue, storage_packet)) {
+bool QueuePop(LidarDataQueue* queue, StoragePacket* storage_packet)
+{
+  if (!QueuePrePop(queue, storage_packet))
+  {
     return false;
   }
   QueuePopUpdate(queue);
@@ -117,23 +133,28 @@ bool QueuePop(LidarDataQueue *queue, StoragePacket *storage_packet) {
   return true;
 }
 
-uint32_t QueueUsedSize(LidarDataQueue *queue) {
+uint32_t QueueUsedSize(LidarDataQueue* queue)
+{
   return queue->wr_idx - queue->rd_idx;
 }
 
-uint32_t QueueUnusedSize(LidarDataQueue *queue) {
+uint32_t QueueUnusedSize(LidarDataQueue* queue)
+{
   return (queue->size - QueueUsedSize(queue));
 }
 
-bool QueueIsFull(LidarDataQueue *queue) {
+bool QueueIsFull(LidarDataQueue* queue)
+{
   return ((queue->wr_idx - queue->rd_idx) > queue->mask);
 }
 
-bool QueueIsEmpty(LidarDataQueue *queue) {
+bool QueueIsEmpty(LidarDataQueue* queue)
+{
   return (queue->rd_idx == queue->wr_idx);
 }
 
-uint32_t QueuePushAny(LidarDataQueue *queue, uint8_t *data, const uint64_t base_time) {
+uint32_t QueuePushAny(LidarDataQueue* queue, uint8_t* data, const uint64_t base_time)
+{
   uint32_t wr_idx = queue->wr_idx & queue->mask;
   PointPacket* lidar_point_data = reinterpret_cast<PointPacket*>(data);
   queue->storage_packet[wr_idx].base_time = base_time;
@@ -141,7 +162,8 @@ uint32_t QueuePushAny(LidarDataQueue *queue, uint8_t *data, const uint64_t base_
 
   queue->storage_packet[wr_idx].points.clear();
   queue->storage_packet[wr_idx].points.resize(lidar_point_data->points_num);
-  memcpy(queue->storage_packet[wr_idx].points.data(), lidar_point_data->points, sizeof(PointXyzlt) * (lidar_point_data->points_num));
+  memcpy(queue->storage_packet[wr_idx].points.data(), lidar_point_data->points,
+         sizeof(PointXyzlt) * (lidar_point_data->points_num));
 
   queue->wr_idx++;
   return 1;

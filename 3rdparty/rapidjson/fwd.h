@@ -97,22 +97,21 @@ struct MemoryStream;
 template <typename Encoding, typename Derived>
 struct BaseReaderHandler;
 
-template <typename SourceEncoding, typename TargetEncoding,
-          typename StackAllocator>
+template <typename SourceEncoding, typename TargetEncoding, typename StackAllocator>
 class GenericReader;
 
 typedef GenericReader<UTF8<char>, UTF8<char>, CrtAllocator> Reader;
 
 // writer.h
 
-template <typename OutputStream, typename SourceEncoding,
-          typename TargetEncoding, typename StackAllocator, unsigned writeFlags>
+template <typename OutputStream, typename SourceEncoding, typename TargetEncoding, typename StackAllocator,
+          unsigned writeFlags>
 class Writer;
 
 // prettywriter.h
 
-template <typename OutputStream, typename SourceEncoding,
-          typename TargetEncoding, typename StackAllocator, unsigned writeFlags>
+template <typename OutputStream, typename SourceEncoding, typename TargetEncoding, typename StackAllocator,
+          unsigned writeFlags>
 class PrettyWriter;
 
 // document.h
@@ -134,9 +133,7 @@ typedef GenericValue<UTF8<char>, MemoryPoolAllocator<CrtAllocator>> Value;
 template <typename Encoding, typename Allocator, typename StackAllocator>
 class GenericDocument;
 
-typedef GenericDocument<UTF8<char>, MemoryPoolAllocator<CrtAllocator>,
-                        CrtAllocator>
-    Document;
+typedef GenericDocument<UTF8<char>, MemoryPoolAllocator<CrtAllocator>, CrtAllocator> Document;
 
 // pointer.h
 
@@ -154,16 +151,12 @@ template <typename ValueT, typename Allocator>
 class GenericSchemaDocument;
 
 typedef GenericSchemaDocument<Value, CrtAllocator> SchemaDocument;
-typedef IGenericRemoteSchemaDocumentProvider<SchemaDocument>
-    IRemoteSchemaDocumentProvider;
+typedef IGenericRemoteSchemaDocumentProvider<SchemaDocument> IRemoteSchemaDocumentProvider;
 
-template <typename SchemaDocumentType, typename OutputHandler,
-          typename StateAllocator>
+template <typename SchemaDocumentType, typename OutputHandler, typename StateAllocator>
 class GenericSchemaValidator;
 
-typedef GenericSchemaValidator<
-    SchemaDocument, BaseReaderHandler<UTF8<char>, void>, CrtAllocator>
-    SchemaValidator;
+typedef GenericSchemaValidator<SchemaDocument, BaseReaderHandler<UTF8<char>, void>, CrtAllocator> SchemaValidator;
 
 RAPIDJSON_NAMESPACE_END
 

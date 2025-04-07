@@ -65,7 +65,8 @@ RAPIDJSON_NAMESPACE_BEGIN
 /*! \ingroup RAPIDJSON_ERRORS
     \see GenericReader::Parse, GenericReader::GetParseErrorCode
 */
-enum ParseErrorCode {
+enum ParseErrorCode
+{
   kParseErrorNone = 0,  //!< No error.
 
   kParseErrorDocumentEmpty,            //!< The document is empty.
@@ -74,21 +75,21 @@ enum ParseErrorCode {
 
   kParseErrorValueInvalid,  //!< Invalid value.
 
-  kParseErrorObjectMissName,   //!< Missing a name for object member.
-  kParseErrorObjectMissColon,  //!< Missing a colon after a name of object
-                               //!< member.
+  kParseErrorObjectMissName,                 //!< Missing a name for object member.
+  kParseErrorObjectMissColon,                //!< Missing a colon after a name of object
+                                             //!< member.
   kParseErrorObjectMissCommaOrCurlyBracket,  //!< Missing a comma or '}' after
-                                             //!an
+                                             //! an
                                              //!< object member.
 
   kParseErrorArrayMissCommaOrSquareBracket,  //!< Missing a comma or ']' after
-                                             //!an
+                                             //! an
                                              //!< array element.
 
   kParseErrorStringUnicodeEscapeInvalidHex,  //!< Incorrect hex digit after \\u
                                              //!< escape in string.
   kParseErrorStringUnicodeSurrogateInvalid,  //!< The surrogate pair in string
-                                             //!is
+                                             //! is
                                              //!< invalid.
   kParseErrorStringEscapeInvalid,      //!< Invalid escape character in string.
   kParseErrorStringMissQuotationMark,  //!< Missing a closing quotation mark in
@@ -117,50 +118,82 @@ enum ParseErrorCode {
     \endcode
     \see GenericReader::Parse, GenericDocument::Parse
 */
-struct ParseResult {
+struct ParseResult
+{
   //!! Unspecified boolean type
   typedef bool (ParseResult::*BooleanType)() const;
 
- public:
+public:
   //! Default constructor, no error.
-  ParseResult() : code_(kParseErrorNone), offset_(0) {}
+  ParseResult() : code_(kParseErrorNone), offset_(0)
+  {
+  }
   //! Constructor to set an error.
-  ParseResult(ParseErrorCode code, size_t offset)
-      : code_(code), offset_(offset) {}
+  ParseResult(ParseErrorCode code, size_t offset) : code_(code), offset_(offset)
+  {
+  }
 
   //! Get the error code.
-  ParseErrorCode Code() const { return code_; }
+  ParseErrorCode Code() const
+  {
+    return code_;
+  }
   //! Get the error offset, if \ref IsError(), 0 otherwise.
-  size_t Offset() const { return offset_; }
+  size_t Offset() const
+  {
+    return offset_;
+  }
 
   //! Explicit conversion to \c bool, returns \c true, iff !\ref IsError().
-  operator BooleanType() const {
+  operator BooleanType() const
+  {
     return !IsError() ? &ParseResult::IsError : NULL;
   }
   //! Whether the result is an error.
-  bool IsError() const { return code_ != kParseErrorNone; }
+  bool IsError() const
+  {
+    return code_ != kParseErrorNone;
+  }
 
-  bool operator==(const ParseResult &that) const { return code_ == that.code_; }
-  bool operator==(ParseErrorCode code) const { return code_ == code; }
-  friend bool operator==(ParseErrorCode code, const ParseResult &err) {
+  bool operator==(const ParseResult& that) const
+  {
+    return code_ == that.code_;
+  }
+  bool operator==(ParseErrorCode code) const
+  {
+    return code_ == code;
+  }
+  friend bool operator==(ParseErrorCode code, const ParseResult& err)
+  {
     return code == err.code_;
   }
 
-  bool operator!=(const ParseResult &that) const { return !(*this == that); }
-  bool operator!=(ParseErrorCode code) const { return !(*this == code); }
-  friend bool operator!=(ParseErrorCode code, const ParseResult &err) {
+  bool operator!=(const ParseResult& that) const
+  {
+    return !(*this == that);
+  }
+  bool operator!=(ParseErrorCode code) const
+  {
+    return !(*this == code);
+  }
+  friend bool operator!=(ParseErrorCode code, const ParseResult& err)
+  {
     return err != code;
   }
 
   //! Reset error code.
-  void Clear() { Set(kParseErrorNone); }
+  void Clear()
+  {
+    Set(kParseErrorNone);
+  }
   //! Update error code and offset.
-  void Set(ParseErrorCode code, size_t offset = 0) {
+  void Set(ParseErrorCode code, size_t offset = 0)
+  {
     code_ = code;
     offset_ = offset;
   }
 
- private:
+private:
   ParseErrorCode code_;
   size_t offset_;
 };
@@ -175,7 +208,7 @@ struct ParseResult {
     const RAPIDJSON_ERROR_CHARTYPE* s =
 GetParseError(document.GetParseErrorCode()); \endcode
 */
-typedef const RAPIDJSON_ERROR_CHARTYPE *(*GetParseErrorFunc)(ParseErrorCode);
+typedef const RAPIDJSON_ERROR_CHARTYPE* (*GetParseErrorFunc)(ParseErrorCode);
 
 RAPIDJSON_NAMESPACE_END
 

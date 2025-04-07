@@ -37,12 +37,13 @@ RAPIDJSON_DIAG_OFF(6334)
 
 //@cond RAPIDJSON_INTERNAL
 RAPIDJSON_NAMESPACE_BEGIN
-namespace internal {
-
+namespace internal
+{
 // Helper to wrap/convert arbitrary types to void, useful for arbitrary type
 // matching
 template <typename T>
-struct Void {
+struct Void
+{
   typedef void Type;
 };
 
@@ -50,7 +51,8 @@ struct Void {
 // BoolType, TrueType, FalseType
 //
 template <bool Cond>
-struct BoolType {
+struct BoolType
+{
   static const bool Value = Cond;
   typedef BoolType Type;
 };
@@ -62,56 +64,85 @@ typedef BoolType<false> FalseType;
 //
 
 template <bool C>
-struct SelectIfImpl {
+struct SelectIfImpl
+{
   template <typename T1, typename T2>
-  struct Apply {
+  struct Apply
+  {
     typedef T1 Type;
   };
 };
 template <>
-struct SelectIfImpl<false> {
+struct SelectIfImpl<false>
+{
   template <typename T1, typename T2>
-  struct Apply {
+  struct Apply
+  {
     typedef T2 Type;
   };
 };
 template <bool C, typename T1, typename T2>
-struct SelectIfCond : SelectIfImpl<C>::template Apply<T1, T2> {};
+struct SelectIfCond : SelectIfImpl<C>::template Apply<T1, T2>
+{
+};
 template <typename C, typename T1, typename T2>
-struct SelectIf : SelectIfCond<C::Value, T1, T2> {};
+struct SelectIf : SelectIfCond<C::Value, T1, T2>
+{
+};
 
 template <bool Cond1, bool Cond2>
-struct AndExprCond : FalseType {};
+struct AndExprCond : FalseType
+{
+};
 template <>
-struct AndExprCond<true, true> : TrueType {};
+struct AndExprCond<true, true> : TrueType
+{
+};
 template <bool Cond1, bool Cond2>
-struct OrExprCond : TrueType {};
+struct OrExprCond : TrueType
+{
+};
 template <>
-struct OrExprCond<false, false> : FalseType {};
+struct OrExprCond<false, false> : FalseType
+{
+};
 
 template <typename C>
-struct BoolExpr : SelectIf<C, TrueType, FalseType>::Type {};
+struct BoolExpr : SelectIf<C, TrueType, FalseType>::Type
+{
+};
 template <typename C>
-struct NotExpr : SelectIf<C, FalseType, TrueType>::Type {};
+struct NotExpr : SelectIf<C, FalseType, TrueType>::Type
+{
+};
 template <typename C1, typename C2>
-struct AndExpr : AndExprCond<C1::Value, C2::Value>::Type {};
+struct AndExpr : AndExprCond<C1::Value, C2::Value>::Type
+{
+};
 template <typename C1, typename C2>
-struct OrExpr : OrExprCond<C1::Value, C2::Value>::Type {};
+struct OrExpr : OrExprCond<C1::Value, C2::Value>::Type
+{
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // AddConst, MaybeAddConst, RemoveConst
 template <typename T>
-struct AddConst {
+struct AddConst
+{
   typedef const T Type;
 };
 template <bool Constify, typename T>
-struct MaybeAddConst : SelectIfCond<Constify, const T, T> {};
+struct MaybeAddConst : SelectIfCond<Constify, const T, T>
+{
+};
 template <typename T>
-struct RemoveConst {
+struct RemoveConst
+{
   typedef T Type;
 };
 template <typename T>
-struct RemoveConst<const T> {
+struct RemoveConst<const T>
+{
   typedef T Type;
 };
 
@@ -119,25 +150,37 @@ struct RemoveConst<const T> {
 // IsSame, IsConst, IsMoreConst, IsPointer
 //
 template <typename T, typename U>
-struct IsSame : FalseType {};
+struct IsSame : FalseType
+{
+};
 template <typename T>
-struct IsSame<T, T> : TrueType {};
+struct IsSame<T, T> : TrueType
+{
+};
 
 template <typename T>
-struct IsConst : FalseType {};
+struct IsConst : FalseType
+{
+};
 template <typename T>
-struct IsConst<const T> : TrueType {};
+struct IsConst<const T> : TrueType
+{
+};
 
 template <typename CT, typename T>
-struct IsMoreConst
-    : AndExpr<
-          IsSame<typename RemoveConst<CT>::Type, typename RemoveConst<T>::Type>,
-          BoolType<IsConst<CT>::Value >= IsConst<T>::Value>>::Type {};
+struct IsMoreConst : AndExpr<IsSame<typename RemoveConst<CT>::Type, typename RemoveConst<T>::Type>,
+                             BoolType<IsConst<CT>::Value >= IsConst<T>::Value>>::Type
+{
+};
 
 template <typename T>
-struct IsPointer : FalseType {};
+struct IsPointer : FalseType
+{
+};
 template <typename T>
-struct IsPointer<T *> : TrueType {};
+struct IsPointer<T*> : TrueType
+{
+};
 
 ///////////////////////////////////////////////////////////////////////////////
 // IsBaseOf
@@ -145,12 +188,15 @@ struct IsPointer<T *> : TrueType {};
 #if RAPIDJSON_HAS_CXX11_TYPETRAITS
 
 template <typename B, typename D>
-struct IsBaseOf : BoolType<::std::is_base_of<B, D>::value> {};
+struct IsBaseOf : BoolType<::std::is_base_of<B, D>::value>
+{
+};
 
 #else  // simplified version adopted from Boost
 
 template <typename B, typename D>
-struct IsBaseOfImpl {
+struct IsBaseOfImpl
+{
   RAPIDJSON_STATIC_ASSERT(sizeof(B) != 0);
   RAPIDJSON_STATIC_ASSERT(sizeof(D) != 0);
 
@@ -158,19 +204,25 @@ struct IsBaseOfImpl {
   typedef char (&No)[2];
 
   template <typename T>
-  static Yes Check(const D *, T);
-  static No Check(const B *, int);
+  static Yes Check(const D*, T);
+  static No Check(const B*, int);
 
-  struct Host {
-    operator const B *() const;
-    operator const D *();
+  struct Host
+  {
+    operator const B*() const;
+    operator const D*();
   };
 
-  enum { Value = (sizeof(Check(Host(), 0)) == sizeof(Yes)) };
+  enum
+  {
+    Value = (sizeof(Check(Host(), 0)) == sizeof(Yes))
+  };
 };
 
 template <typename B, typename D>
-struct IsBaseOf : OrExpr<IsSame<B, D>, BoolExpr<IsBaseOfImpl<B, D>>>::Type {};
+struct IsBaseOf : OrExpr<IsSame<B, D>, BoolExpr<IsBaseOfImpl<B, D>>>::Type
+{
+};
 
 #endif  // RAPIDJSON_HAS_CXX11_TYPETRAITS
 
@@ -178,55 +230,63 @@ struct IsBaseOf : OrExpr<IsSame<B, D>, BoolExpr<IsBaseOfImpl<B, D>>>::Type {};
 // EnableIf / DisableIf
 //
 template <bool Condition, typename T = void>
-struct EnableIfCond {
+struct EnableIfCond
+{
   typedef T Type;
 };
 template <typename T>
-struct EnableIfCond<false, T> { /* empty */
+struct EnableIfCond<false, T>
+{ /* empty */
 };
 
 template <bool Condition, typename T = void>
-struct DisableIfCond {
+struct DisableIfCond
+{
   typedef T Type;
 };
 template <typename T>
-struct DisableIfCond<true, T> { /* empty */
+struct DisableIfCond<true, T>
+{ /* empty */
 };
 
 template <typename Condition, typename T = void>
-struct EnableIf : EnableIfCond<Condition::Value, T> {};
+struct EnableIf : EnableIfCond<Condition::Value, T>
+{
+};
 
 template <typename Condition, typename T = void>
-struct DisableIf : DisableIfCond<Condition::Value, T> {};
+struct DisableIf : DisableIfCond<Condition::Value, T>
+{
+};
 
 // SFINAE helpers
-struct SfinaeTag {};
+struct SfinaeTag
+{
+};
 template <typename T>
 struct RemoveSfinaeTag;
 template <typename T>
-struct RemoveSfinaeTag<SfinaeTag &(*)(T)> {
+struct RemoveSfinaeTag<SfinaeTag& (*)(T)>
+{
   typedef T Type;
 };
 
-#define RAPIDJSON_REMOVEFPTR_(type)                          \
-  typename ::RAPIDJSON_NAMESPACE::internal::RemoveSfinaeTag< \
-      ::RAPIDJSON_NAMESPACE::internal::SfinaeTag &(*)type>::Type
+#define RAPIDJSON_REMOVEFPTR_(type)                                                                                    \
+  typename ::RAPIDJSON_NAMESPACE::internal::RemoveSfinaeTag<::RAPIDJSON_NAMESPACE::internal::SfinaeTag&(*)type>::Type
 
-#define RAPIDJSON_ENABLEIF(cond)                                            \
-  typename ::RAPIDJSON_NAMESPACE::internal::EnableIf<RAPIDJSON_REMOVEFPTR_( \
-      cond)>::Type * = NULL
+#define RAPIDJSON_ENABLEIF(cond)                                                                                       \
+  typename ::RAPIDJSON_NAMESPACE::internal::EnableIf<RAPIDJSON_REMOVEFPTR_(cond)>::Type* = NULL
 
-#define RAPIDJSON_DISABLEIF(cond)                                            \
-  typename ::RAPIDJSON_NAMESPACE::internal::DisableIf<RAPIDJSON_REMOVEFPTR_( \
-      cond)>::Type * = NULL
+#define RAPIDJSON_DISABLEIF(cond)                                                                                      \
+  typename ::RAPIDJSON_NAMESPACE::internal::DisableIf<RAPIDJSON_REMOVEFPTR_(cond)>::Type* = NULL
 
-#define RAPIDJSON_ENABLEIF_RETURN(cond, returntype)   \
-  typename ::RAPIDJSON_NAMESPACE::internal::EnableIf< \
-      RAPIDJSON_REMOVEFPTR_(cond), RAPIDJSON_REMOVEFPTR_(returntype)>::Type
+#define RAPIDJSON_ENABLEIF_RETURN(cond, returntype)                                                                    \
+  typename ::RAPIDJSON_NAMESPACE::internal::EnableIf<RAPIDJSON_REMOVEFPTR_(cond),                                      \
+                                                     RAPIDJSON_REMOVEFPTR_(returntype)>::Type
 
-#define RAPIDJSON_DISABLEIF_RETURN(cond, returntype)   \
-  typename ::RAPIDJSON_NAMESPACE::internal::DisableIf< \
-      RAPIDJSON_REMOVEFPTR_(cond), RAPIDJSON_REMOVEFPTR_(returntype)>::Type
+#define RAPIDJSON_DISABLEIF_RETURN(cond, returntype)                                                                   \
+  typename ::RAPIDJSON_NAMESPACE::internal::DisableIf<RAPIDJSON_REMOVEFPTR_(cond),                                     \
+                                                      RAPIDJSON_REMOVEFPTR_(returntype)>::Type
 
 }  // namespace internal
 RAPIDJSON_NAMESPACE_END

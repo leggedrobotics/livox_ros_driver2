@@ -50,8 +50,7 @@
 #if _MSC_VER >= 1600  // [
 #include <stdint.h>
 
-#if !defined(__cplusplus) || \
-    defined(__STDC_CONSTANT_MACROS)  // [   See footnote 224 at page 260
+#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)  // [   See footnote 224 at page 260
 
 #undef INT8_C
 #undef INT16_C
@@ -163,7 +162,7 @@ typedef unsigned __int64 uintptr_t;
 #else          // _WIN64 ][
 typedef _W64 signed int intptr_t;
 typedef _W64 unsigned int uintptr_t;
-#endif  // _WIN64 ]
+#endif         // _WIN64 ]
 
 // 7.18.1.5 Greatest-width integer types
 typedef int64_t intmax_t;
@@ -171,8 +170,7 @@ typedef uint64_t uintmax_t;
 
 // 7.18.2 Limits of specified-width integer types
 
-#if !defined(__cplusplus) || \
-    defined(__STDC_LIMIT_MACROS)  // [   See footnote 220 at page 257 and
+#if !defined(__cplusplus) || defined(__STDC_LIMIT_MACROS)  // [   See footnote 220 at page 257 and
 // footnote 221 at page 259
 
 // 7.18.2.1 Limits of exact-width integer types
@@ -251,8 +249,8 @@ typedef uint64_t uintmax_t;
 #define SIZE_MAX _UI64_MAX
 #else  // _WIN64 ][
 #define SIZE_MAX _UI32_MAX
-#endif  // _WIN64 ]
-#endif  // SIZE_MAX ]
+#endif             // _WIN64 ]
+#endif             // SIZE_MAX ]
 
 // WCHAR_MIN and WCHAR_MAX are also defined in <wchar.h>
 #ifndef WCHAR_MIN  // [
@@ -269,8 +267,7 @@ typedef uint64_t uintmax_t;
 
 // 7.18.4 Limits of other integer types
 
-#if !defined(__cplusplus) || \
-    defined(__STDC_CONSTANT_MACROS)  // [   See footnote 224 at page 260
+#if !defined(__cplusplus) || defined(__STDC_CONSTANT_MACROS)  // [   See footnote 224 at page 260
 
 // 7.18.4.1 Macros for minimum-width integer constants
 

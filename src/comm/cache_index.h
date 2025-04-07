@@ -32,23 +32,24 @@
 
 #include "comm/comm.h"
 
-namespace livox_ros {
-
-class CacheIndex {
- public:
+namespace livox_ros
+{
+class CacheIndex
+{
+public:
   CacheIndex();
   int8_t GetFreeIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index);
   int8_t GetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index);
   int8_t GenerateIndexKey(const uint8_t livox_lidar_type, const uint32_t handle, std::string& key);
   int8_t LvxGetIndex(const uint8_t livox_lidar_type, const uint32_t handle, uint8_t& index);
-  void ResetIndex(LidarDevice *lidar);
+  void ResetIndex(LidarDevice* lidar);
 
- private:
+private:
   std::mutex index_mutex_;
   std::map<std::string, uint8_t> map_index_; /* key:handle/slot, val:index */
   std::array<bool, kMaxSourceLidar> index_cache_;
 };
 
-} // namespace livox_ros
+}  // namespace livox_ros
 
-# endif // LIVOX_ROS_DRIVER_CACHE_INDEX_H_
+#endif  // LIVOX_ROS_DRIVER_CACHE_INDEX_H_
