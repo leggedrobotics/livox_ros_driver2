@@ -35,11 +35,10 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   rosbag
   pcl_ros
-  std_srvs
 )
 
 ## Find pcl lib
-find_package(PCL 1.10 EXACT REQUIRED PATHS /usr/include/pcl-1.10/)
+find_package(PCL REQUIRED)
 
 ## Generate messages in the 'msg' folder
 add_message_files(FILES
@@ -84,14 +83,9 @@ endif()
 #---------------------------------------------------------------------------------------
 # Compiler config
 #---------------------------------------------------------------------------------------
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
-
-include_directories("/usr/local/lib")
-
-# include_directories("/home/tutuna/.local")
-# find_library(LIVOX_LIDAR_SDK_LIBRARY  liblivox_lidar_sdk_static.a    /home/tutuna/.local)
 
 ## make sure the livox_lidar_sdk_static library is installed
 find_library(LIVOX_LIDAR_SDK_LIBRARY  liblivox_lidar_sdk_static.a    /usr/local/lib)
@@ -185,4 +179,3 @@ install(DIRECTORY launch_ROS1/
 #---------------------------------------------------------------------------------------
 # end of CMakeList.txt
 #---------------------------------------------------------------------------------------
-

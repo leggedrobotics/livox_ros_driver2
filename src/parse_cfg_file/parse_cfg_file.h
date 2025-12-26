@@ -34,22 +34,19 @@
 #include <string>
 #include <vector>
 
-namespace livox_ros
-{
-class ParseCfgFile
-{
-public:
+namespace livox_ros {
+
+class ParseCfgFile {
+ public:
   explicit ParseCfgFile(const std::string& path);
-  ~ParseCfgFile()
-  {
-  }
+  ~ParseCfgFile() {}
 
   bool ParseSummaryInfo(LidarSummaryInfo& lidar_summary_info);
-
-private:
+  
+ private:
   const std::string path_;
 };
 
-}  // namespace livox_ros
+} // namespace livox_ros
 
-#endif  // LIVOX_ROS_DRIVER_PARSE_CFG_FILE_H_
+#endif // LIVOX_ROS_DRIVER_PARSE_CFG_FILE_H_
