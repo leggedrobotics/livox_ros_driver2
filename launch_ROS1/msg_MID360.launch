@@ -37,4 +37,8 @@
           		args="-a"/>
     </group>
 
+	<!-- Identity TF: mid360_vanilla -> livox_frame -->
+	<node pkg="tf2_ros" type="static_transform_publisher" name="mid360_vanilla_to_livox_frame"
+		args="0 0 0 0 0 0 mid360_vanilla livox_frame"/>
+
 </launch>
