@@ -37,9 +37,9 @@
           		args="-a"/>
     </group>
 
-	<!-- Identity TF: mid360_vanilla -> livox_frame -->
-	<node pkg="tf2_ros" type="static_transform_publisher" name="mid360_vanilla_to_livox_frame"
-		args="0 0 0 0 0 0 mid360_vanilla livox_frame"/>
+	<!-- Static TF: torso_link -> livox_frame (matches live g1_29dof.urdf chain: Ry(0.0401)*Rx(pi)) -->
+	<!-- <node pkg="tf2_ros" type="static_transform_publisher" name="torso_to_livox_frame"
+		args="0.0002835 0.00003 0.40618 0.999798578493 0 -0.0200699387836 0 torso_link livox_frame"/> -->
 
 	<node pkg="nodelet" type="nodelet" name="crop_box"
 		args="standalone pcl/CropBox">
