@@ -41,18 +41,4 @@
 	<!-- <node pkg="tf2_ros" type="static_transform_publisher" name="torso_to_livox_frame"
 		args="0.0002835 0.00003 0.40618 0.999798578493 0 -0.0200699387836 0 torso_link livox_frame"/> -->
 
-	<node pkg="nodelet" type="nodelet" name="crop_box"
-		args="standalone pcl/CropBox">
-		<remap from="~input"  to="/livox/lidar"/>
-		<remap from="~output" to="/livox/lidar_filtered"/>
-		<rosparam>
-      min_x: -1.0
-      max_x: 0.2
-      min_y: -0.5
-      max_y: 0.5
-      min_z: -0.5
-      max_z: 0.5
-      negative: true
-    </rosparam>
-	</node>
 </launch>
